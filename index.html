@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <link rel="stylesheet" href="./assets/css/style.css">
+
+    <script defer src="./assets/js/index.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Edutecno Presupuestation's</h1>
+    </header>
+
+    <main>
+        <section id="user-form-section">
+            <h2>Crea un Usuario</h2>
+            <form id="user-form">
+                <label for="nombre">Nombres</label>
+                <input type="text" id="nombre" placeholder="Nombres" required>
+
+                <label for="apellido-p">Apellido Paterno</label>
+                <input type="text" id="apellido-p" placeholder="Apellido Paterno" required>
+
+                <label for="apellido-m">Apellido Materno</label>
+                <input type="text" id="apellido-m" placeholder="Apellido Materno" required>
+
+                <label for="rut">Rut (sin puntos)</label>
+                <input type="text" id="rut" placeholder="123456789" required> - 
+                <input type="text" id="dv-rut" placeholder="0" required>
+
+                <label for="telefono">Telefono (+56)</label>
+                <input type="text" id="telefono" placeholder="912345678" required>
+
+                <label for="email">Correo</label>
+                <input type="text" id="email" placeholder="ejemplo@dominio.com" required>
+
+                <label for="presupuesto">Presupuesto</label>
+                <input type="number" id="presupuesto" placeholder="Ingresa tu Prespuesto" required>
+
+                <button type="submit">Crear Usuario</button>
+            </form>
+        </section>
+
+        <section id="user-list">
+            <h2>Usuarios</h2>
+            <select id="select-usuario"></select>
+        </section>
+
+        <section id="gastos-form-section">
+            <h2>Agregar Gasto</h2>
+            <form id="gastos-form">
+                <label for="nombre-gasto"></label>
+                <input type="text" id="nombre-gasto" placeholder="Nombre de tu gasto">
+
+                <label for="monto-gasto">Monto</label>
+                <input type="number" name="monto-gasto" id="monto-gasto">
+
+                <button type="submit">Agregar Gasto</button>
+            </form>
+        </section>
+
+        <section id="tabla-gastos-section">
+            <h2>Lista de Gastos</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Gasto</th>
+                        <th>Monto</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-gastos">
+                    <!--Aqui cargaremos dinamicamente los gastos-->
+                </tbody>
+            </table>
+        </section>
+
+        <section id="resumen">
+            <h2>Resumen</h2>
+            <p>Presupuesto: <span id="presupuesto-total">0</span></p>
+            <p>Gasto Total: <span id="gasto-total">0</span></p>
+            <p>Saldo Total: <span id="saldo-total">0</span></p>
+        </section>
+
+    </main>
+
+    <footer>
+        <h3>Soy un Footer</h3>
+    </footer>
+</body>
+</html>
