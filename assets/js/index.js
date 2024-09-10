@@ -117,3 +117,38 @@ console.log(usuario1.getAllProperties())
 
 
  */
+
+function Gasto(nombre, monto) {
+    //Genero propiedades Privadas (falta validar)
+    let _nombre = nombre;
+    let _monto = monto
+
+    //Métodos públicos de accesibilidad (getters y setters)
+    //getters
+    this.getAllProperties = function () {
+        return {
+            nombre: _nombre,
+            monto: _monto
+        }
+    }
+
+    this.getNombre = function() {
+        return _nombre
+    }
+
+    this.getMonto = function() {
+        return _monto
+    }
+
+    //Setters
+
+    this.setNombre = function(nuevoNombre) {
+        //validacion pendiente
+        _nombre = nuevoNombre;
+    }
+
+    this.setMonto = function(nuevoMonto) {
+        //validacion pendiente
+        _monto = nuevoMonto
+    }
+}
