@@ -1,9 +1,14 @@
+
+const REGEX_NOMBRES = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/
+
+
+
 function Usuario(nombre, apellidoP, apellidoM, rutNumero, rutDV, telefono, email, presupuesto) {
     //Propiedades Privadas # _ $ => Corresponde a Encapsulamiento
 
-    let _nombre = nombre;
-    let _apellidoP = apellidoP;
-    let _apellidoM = apellidoM;
+    let _nombre = validarNombres(nombre, REGEX_NOMBRES);
+    let _apellidoP = validarNombres(apellidoP, REGEX_NOMBRES);
+    let _apellidoM = validarNombres(apellidoM, REGEX_NOMBRES);
     let _rutNumero = rutNumero;
     let _rutDv = rutDV;
     let _telefono = telefono;
@@ -106,6 +111,13 @@ function Usuario(nombre, apellidoP, apellidoM, rutNumero, rutDV, telefono, email
       //validacion pendiente
       _rut = nuevoRut;
     };
+
+
+    // Métodos Privados
+    function validarNombres(nombre, regex) {
+      if(!regex.test(nombre)) throw new Error('El nombre o los apellidos solo deben contener letras y espacios')
+      return nombre 
+    }
     
 }
 
@@ -113,10 +125,9 @@ function Usuario(nombre, apellidoP, apellidoM, rutNumero, rutDV, telefono, email
 
 usuario = usuario1.getAllProperties()
 usuario.nombre = 'Francisca'
-console.log(usuario1.getAllProperties())
+console.log(usuario1.getAllProperties()) */
 
 
- */
 
 function Gasto(nombre, monto) {
     //Genero propiedades Privadas (falta validar)
