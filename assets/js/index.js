@@ -15,7 +15,7 @@ function Usuario(nombre, apellidoP, apellidoM, rutNumero, rutDV, telefono, email
     let _rutDv = validarDigitoVerificador(rutNumero, rutDV);
     let _telefono = validarTelefono(telefono, REGEX_TELEFONO);
     let _email = email;
-    let _presupuesto = presupuesto
+    let _presupuesto = validarMonto(presupuesto)
     let _gastos = []
 
     //Métodos públicos de accesibilidad y modiciación (getters y setters)
@@ -101,7 +101,7 @@ function Usuario(nombre, apellidoP, apellidoM, rutNumero, rutDV, telefono, email
     
     this.setPresupuesto = function (nuevoPresupuesto) {
       //validacion pendiente
-      _presupuesto = nuevoPresupuesto;
+      _presupuesto = validarMonto(nuevoPresupuesto);
     };
     
     this.setGastos = function (nuevoGastos) {
@@ -207,4 +207,9 @@ const validarDigitoVerificador = (numeroRut, DV_Rut) => {
   }
 
   return DV_Rut
+}
+
+const validarMonto = (monto) => {
+  if(isNaN(monto) || monto < 0) throw new Error('El monto debe ser un núermo mayor que 0')
+  return monto
 }
