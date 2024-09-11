@@ -75,39 +75,34 @@ function Usuario(nombre, apellidoP, apellidoM, rutNumero, rutDV, telefono, email
 
     //Setters
     this.setNombre = function(nuevoNombre) {
-        //validacion pendiente
+
         _nombre = validarNombres(nuevoNombre, REGEX_NOMBRES)
     }
 
     this.setApellidoP = function (nuevoApellidoP) {
-      //validacion pendiente
       _apellidoP = validarNombres(nuevoApellidoP, REGEX_NOMBRES);
     };
     
     this.setApellidoM = function (nuevoApellidoM) {
-      //validacion pendiente
       _apellidoM = validarNombres(nuevoApellidoM, REGEX_NOMBRES);
     }
     
     ;this.setEmail = function (nuevoEmail) {
-      //validacion pendiente
       _email = nuevoEmail;
     };
     
     this.setTelefono = function (nuevoTelefono) {
-      //validacion pendiente
       _telefono = validarTelefono(nuevoTelefono, REGEX_TELEFONO);
     };
     
     this.setPresupuesto = function (nuevoPresupuesto) {
-      //validacion pendiente
       _presupuesto = validarMonto(nuevoPresupuesto);
     };
     
-    this.setGastos = function (nuevoGastos) {
-      //validacion pendiente
-      _gastos = nuevoGastos;
-    };
+    //Método público y por ende heredado a los hijos
+    this.agregarGasto = function (gasto) {
+      _gastos.push(validarGasto(gasto))
+    }
     
     // Métodos Privados -> Ejemplo de como hacerla en prototipos privados (más abajo esta la fn que estamos usando)
     /* function validarNombres(nombre, regex) {
@@ -150,12 +145,10 @@ function Gasto(nombre, monto) {
     //Setters
 
     this.setNombre = function(nuevoNombre) {
-        //validacion pendiente
         _nombre = validarNombres(nuevoNombre, REGEX_NOMBRES);
     }
 
     this.setMonto = function(nuevoMonto) {
-        //validacion pendiente
         _monto = validarMonto(nuevoMonto)
     }
 }
@@ -210,11 +203,15 @@ const validarMonto = (monto) => {
   return monto
 }
 
+const validarGasto = (gasto) => {
+  if(!(gasto instanceof Gasto)) throw new Error('El gasto debe ser una instancia de la clase Gasto')
+  return gasto
+}
 
 /* ------------------------------------- Manejo del DOM ----------------------------------------------*/
 
 const userForm = document.getElementById('user-form');
-const gastoForm = document.getElementById('gasto-form')
+const gastoForm = document.getElementById("gastos-form");
 
 const selectUsers = document.getElementById("select-usuario");
 
@@ -265,3 +262,23 @@ userForm.addEventListener('submit', (event) => {
   }
 })
 
+gastoForm.addEventListener('submit', (event) => {
+  event.preventDefault()
+
+  const usuarioSeleccionado = usuarios[selectUsers.selectedIndex]
+
+  const nombreGasto = document.getElementById("nombre-gasto").value;
+  const montoGasto = document.getElementById("monto-gasto").value;
+
+  try{
+    const gasto = new Gasto(nombreGasto, montoGasto);
+    usuarioSeleccionado.agregarGasto(gasto)
+    gastoForm.reset()
+    console.log(usuarioSeleccionado.getAllProperties())
+    console.log(usuarioSeleccionado.getGastos());
+  } catch (error) {
+    console.error('No pudimos agregar el gasto', error)
+    alert('No pudimos agregar el gasto', error)
+  }
+
+})
