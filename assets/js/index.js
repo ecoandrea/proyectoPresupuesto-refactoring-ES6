@@ -1,7 +1,7 @@
 
 const REGEX_NOMBRES = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/
 const REGEX_TELEFONO = /^\+56\d{9}$/
-const REGEX_RUT = /^\d{7,8}+$/
+const REGEX_RUT = /^\d{7,8}$/
 
 
 
@@ -127,8 +127,8 @@ console.log(usuario1.getAllProperties())
 
 function Gasto(nombre, monto) {
     //Genero propiedades Privadas (falta validar)
-    let _nombre = nombre;
-    let _monto = monto
+    let _nombre = validarNombres(nombre, REGEX_NOMBRES);
+    let _monto = validarMonto(monto)
 
     //Métodos públicos de accesibilidad (getters y setters)
     //getters
@@ -151,15 +151,16 @@ function Gasto(nombre, monto) {
 
     this.setNombre = function(nuevoNombre) {
         //validacion pendiente
-        _nombre = nuevoNombre;
+        _nombre = validarNombres(nuevoNombre, REGEX_NOMBRES);
     }
 
     this.setMonto = function(nuevoMonto) {
         //validacion pendiente
-        _monto = nuevoMonto
+        _monto = validarMonto(nuevoMonto)
     }
 }
 
+/* ------------------------------------- Funciones de Validacion ----------------------------------------------*/
 
 const validarNombres = (nombre, regex) => {
   if (!regex.test(nombre)) throw new Error("El nombre o los apellidos solo deben contener letras y espacios");
@@ -207,3 +208,43 @@ const validarMonto = (monto) => {
   if(isNaN(monto) || monto < 0) throw new Error('El monto debe ser un núermo mayor que 0')
   return monto
 }
+
+
+/* ------------------------------------- Manejo del DOM ----------------------------------------------*/
+
+const userForm = document.getElementById('user-form');
+const gastoForm = document.getElementById('gasto-form')
+
+const usuarios = []
+
+userForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+
+  const nombre = document.getElementById('nombre').value;
+  const apellidoP = document.getElementById('apellido-p').value;
+  const apellidoM = document.getElementById('apellido-m').value;
+  const numeroRut = document.getElementById('rut').value;
+  const dvRut = document.getElementById("dv-rut").value;
+  const telefono = document.getElementById('telefono').value;
+  const email = document.getElementById('email').value;
+  const presupuesto = document.getElementById('presupuesto').value
+
+  try {
+    const usuario = new Usuario(
+      nombre, 
+      apellidoP, 
+      apellidoM, 
+      numeroRut, 
+      dvRut, 
+      telefono, 
+      email, 
+      presupuesto
+    );
+    usuarios.push(usuario)
+    userForm.reset();
+    usuarios.forEach(usuario => console.log(usuario.getAllProperties()))
+  } catch (error) {
+      console.error('Error al crear el usuario', error)
+      alert('Error al crear el usuario', error.message)
+  }
+})
