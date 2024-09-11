@@ -1,5 +1,7 @@
 
 const REGEX_NOMBRES = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/
+const REGEX_TELEFONO = /^\+56\d{9}$/
+const REGEX_RUT = /^\d{7,8}+$/
 
 
 
@@ -9,9 +11,9 @@ function Usuario(nombre, apellidoP, apellidoM, rutNumero, rutDV, telefono, email
     let _nombre = validarNombres(nombre, REGEX_NOMBRES);
     let _apellidoP = validarNombres(apellidoP, REGEX_NOMBRES);
     let _apellidoM = validarNombres(apellidoM, REGEX_NOMBRES);
-    let _rutNumero = rutNumero;
-    let _rutDv = rutDV;
-    let _telefono = telefono;
+    let _rutNumero = validarRUT(rutNumero, REGEX_RUT);
+    let _rutDv = validarDigitoVerificador(rutNumero, rutDV);
+    let _telefono = validarTelefono(telefono, REGEX_TELEFONO);
     let _email = email;
     let _presupuesto = presupuesto
     let _gastos = []
@@ -74,17 +76,17 @@ function Usuario(nombre, apellidoP, apellidoM, rutNumero, rutDV, telefono, email
     //Setters
     this.setNombre = function(nuevoNombre) {
         //validacion pendiente
-        _nombre = nuevoNombre
+        _nombre = validarNombres(nuevoNombre, REGEX_NOMBRES)
     }
 
     this.setApellidoP = function (nuevoApellidoP) {
       //validacion pendiente
-      _apellidoP = nuevoApellidoP;
+      _apellidoP = validarNombres(nuevoApellidoP, REGEX_NOMBRES);
     };
     
     this.setApellidoM = function (nuevoApellidoM) {
       //validacion pendiente
-      _apellidoM = nuevoApellidoM;
+      _apellidoM = validarNombres(nuevoApellidoM, REGEX_NOMBRES);
     }
     
     ;this.setEmail = function (nuevoEmail) {
@@ -94,7 +96,7 @@ function Usuario(nombre, apellidoP, apellidoM, rutNumero, rutDV, telefono, email
     
     this.setTelefono = function (nuevoTelefono) {
       //validacion pendiente
-      _telefono = nuevoTelefono;
+      _telefono = validarTelefono(nuevoTelefono, REGEX_TELEFONO);
     };
     
     this.setPresupuesto = function (nuevoPresupuesto) {
@@ -113,20 +115,20 @@ function Usuario(nombre, apellidoP, apellidoM, rutNumero, rutDV, telefono, email
     };
 
 
-    // Métodos Privados
-    function validarNombres(nombre, regex) {
+    // Métodos Privados -> Ejemplo de como hacerla en prototipos privados (más abajo esta la fn que estamos usando)
+    /* function validarNombres(nombre, regex) {
       if(!regex.test(nombre)) throw new Error('El nombre o los apellidos solo deben contener letras y espacios')
       return nombre 
-    }
+    } */
     
 }
 
-/* const usuario1 = new Usuario('Alan', 'García', 'Muñoz') 
+/* const usuario1 = new Usuario('Jordan veintitres', 'García', 'Muñoz') 
 
 usuario = usuario1.getAllProperties()
 usuario.nombre = 'Francisca'
-console.log(usuario1.getAllProperties()) */
-
+console.log(usuario1.getAllProperties())
+ */
 
 
 function Gasto(nombre, monto) {
@@ -162,4 +164,47 @@ function Gasto(nombre, monto) {
         //validacion pendiente
         _monto = nuevoMonto
     }
+}
+
+
+const validarNombres = (nombre, regex) => {
+  if (!regex.test(nombre)) throw new Error("El nombre o los apellidos solo deben contener letras y espacios");
+  return nombre;
+}
+
+const validarTelefono = (telefono, regex) => {
+  if(!regex.test(telefono)) throw new Error('El número de telefono debe tener el formato Chileno')
+  return telefono
+}
+
+const validarRUT = (rut, regex) => {
+  if(!regex.test(rut)) throw new Error('El número de RUT no es válido')
+  return rut.trim()
+}
+
+const calcularDigitoVerificador = (rut) => {
+  let acumulador = 0;
+  let multiplicador = 2;
+
+  for(let i = rut.length - 1; i >= 0; i--) {
+    acumulador += multiplicador * parseInt(rut.charAt(i));
+    multiplicador = multiplicador === 7 ? 2 : multiplicador + 1 // if ternario
+  }
+
+  const digitoParaEvaluar = 11 - (acumulador % 11)
+
+  if(digitoParaEvaluar === 11) return '0';
+  if(digitoParaEvaluar === 10) return 'k';
+  return digitoParaEvaluar.toString();
+
+}
+
+
+const validarDigitoVerificador = (numeroRut, DV_Rut) => {
+  const dvCalculado = calcularDigitoVerificador(numeroRut);
+  if(dvCalculado.toLocaleLowerCase() !== DV_Rut.toLocaleLowerCase()) {
+    throw new Error('Digito verificador no válido')
+  }
+
+  return DV_Rut
 }
