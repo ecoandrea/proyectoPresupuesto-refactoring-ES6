@@ -163,6 +163,7 @@ function Gasto(nombre, monto) {
 /* ------------------------------------- Funciones de Validacion ----------------------------------------------*/
 
 const validarNombres = (nombre, regex) => {
+  if (nombre === null || nombre === undefined) return 'No otorgado'
   if (!regex.test(nombre)) throw new Error("El nombre o los apellidos solo deben contener letras y espacios");
   return nombre;
 }
@@ -215,7 +216,22 @@ const validarMonto = (monto) => {
 const userForm = document.getElementById('user-form');
 const gastoForm = document.getElementById('gasto-form')
 
+const selectUsers = document.getElementById("select-usuario");
+
 const usuarios = []
+
+const actualizarUsuarios = () => {
+  selectUsers.innerHTML = ""
+
+  usuarios.forEach((usuario, index) => {
+    const optionsSelect = document.createElement('option')
+    optionsSelect.value = index
+    optionsSelect.textContent = usuario.getNombreCompleto();
+    
+    selectUsers.appendChild(optionsSelect)
+  })
+}
+
 
 userForm.addEventListener('submit', (event) => {
   event.preventDefault();
@@ -241,10 +257,11 @@ userForm.addEventListener('submit', (event) => {
       presupuesto
     );
     usuarios.push(usuario)
+    actualizarUsuarios()
     userForm.reset();
-    usuarios.forEach(usuario => console.log(usuario.getAllProperties()))
   } catch (error) {
       console.error('Error al crear el usuario', error)
       alert('Error al crear el usuario', error.message)
   }
 })
+
