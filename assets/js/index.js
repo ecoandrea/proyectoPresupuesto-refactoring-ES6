@@ -1,14 +1,21 @@
+
+const REGEX_NOMBRES = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/
+const REGEX_TELEFONO = /^\+56\d{9}$/
+const REGEX_RUT = /^\d{7,8}$/
+
+
+
 function Usuario(nombre, apellidoP, apellidoM, rutNumero, rutDV, telefono, email, presupuesto) {
     //Propiedades Privadas # _ $ => Corresponde a Encapsulamiento
 
-    let _nombre = nombre;
-    let _apellidoP = apellidoP;
-    let _apellidoM = apellidoM;
-    let _rutNumero = rutNumero;
-    let _rutDv = rutDV;
-    let _telefono = telefono;
+    let _nombre = validarNombres(nombre, REGEX_NOMBRES);
+    let _apellidoP = validarNombres(apellidoP, REGEX_NOMBRES);
+    let _apellidoM = validarNombres(apellidoM, REGEX_NOMBRES);
+    let _rutNumero = validarRUT(rutNumero, REGEX_RUT);
+    let _rutDv = validarDigitoVerificador(rutNumero, rutDV);
+    let _telefono = validarTelefono(telefono, REGEX_TELEFONO);
     let _email = email;
-    let _presupuesto = presupuesto
+    let _presupuesto = validarMonto(presupuesto)
     let _gastos = []
 
     //Métodos públicos de accesibilidad y modiciación (getters y setters)
@@ -68,52 +75,210 @@ function Usuario(nombre, apellidoP, apellidoM, rutNumero, rutDV, telefono, email
 
     //Setters
     this.setNombre = function(nuevoNombre) {
-        //validacion pendiente
-        _nombre = nuevoNombre
+
+        _nombre = validarNombres(nuevoNombre, REGEX_NOMBRES)
     }
 
     this.setApellidoP = function (nuevoApellidoP) {
-      //validacion pendiente
-      _apellidoP = nuevoApellidoP;
+      _apellidoP = validarNombres(nuevoApellidoP, REGEX_NOMBRES);
     };
     
     this.setApellidoM = function (nuevoApellidoM) {
-      //validacion pendiente
-      _apellidoM = nuevoApellidoM;
+      _apellidoM = validarNombres(nuevoApellidoM, REGEX_NOMBRES);
     }
     
     ;this.setEmail = function (nuevoEmail) {
-      //validacion pendiente
       _email = nuevoEmail;
     };
     
     this.setTelefono = function (nuevoTelefono) {
-      //validacion pendiente
-      _telefono = nuevoTelefono;
+      _telefono = validarTelefono(nuevoTelefono, REGEX_TELEFONO);
     };
     
     this.setPresupuesto = function (nuevoPresupuesto) {
-      //validacion pendiente
-      _presupuesto = nuevoPresupuesto;
+      _presupuesto = validarMonto(nuevoPresupuesto);
     };
     
-    this.setGastos = function (nuevoGastos) {
-      //validacion pendiente
-      _gastos = nuevoGastos;
-    };
+    //Método público y por ende heredado a los hijos
+    this.agregarGasto = function (gasto) {
+      _gastos.push(validarGasto(gasto))
+    }
     
-    this.setRut = function (nuevoRut) {
-      //validacion pendiente
-      _rut = nuevoRut;
-    };
+    // Métodos Privados -> Ejemplo de como hacerla en prototipos privados (más abajo esta la fn que estamos usando)
+    /* function validarNombres(nombre, regex) {
+      if(!regex.test(nombre)) throw new Error('El nombre o los apellidos solo deben contener letras y espacios')
+      return nombre 
+    } */
     
 }
 
-/* const usuario1 = new Usuario('Alan', 'García', 'Muñoz') 
+/* const usuario1 = new Usuario('Jordan veintitres', 'García', 'Muñoz') 
 
 usuario = usuario1.getAllProperties()
 usuario.nombre = 'Francisca'
 console.log(usuario1.getAllProperties())
-
-
  */
+
+
+function Gasto(nombre, monto) {
+    //Genero propiedades Privadas (falta validar)
+    let _nombre = validarNombres(nombre, REGEX_NOMBRES);
+    let _monto = validarMonto(monto)
+
+    //Métodos públicos de accesibilidad (getters y setters)
+    //getters
+    this.getAllProperties = function () {
+        return {
+            nombre: _nombre,
+            monto: _monto
+        }
+    }
+
+    this.getNombre = function() {
+        return _nombre
+    }
+
+    this.getMonto = function() {
+        return _monto
+    }
+
+    //Setters
+
+    this.setNombre = function(nuevoNombre) {
+        _nombre = validarNombres(nuevoNombre, REGEX_NOMBRES);
+    }
+
+    this.setMonto = function(nuevoMonto) {
+        _monto = validarMonto(nuevoMonto)
+    }
+}
+
+/* ------------------------------------- Funciones de Validacion ----------------------------------------------*/
+
+const validarNombres = (nombre, regex) => {
+  if (nombre === null || nombre === undefined) return 'No otorgado'
+  if (!regex.test(nombre)) throw new Error("El nombre o los apellidos solo deben contener letras y espacios");
+  return nombre;
+}
+
+const validarTelefono = (telefono, regex) => {
+  if(!regex.test(telefono)) throw new Error('El número de telefono debe tener el formato Chileno')
+  return telefono
+}
+
+const validarRUT = (rut, regex) => {
+  if(!regex.test(rut)) throw new Error('El número de RUT no es válido')
+  return rut.trim()
+}
+
+const calcularDigitoVerificador = (rut) => {
+  let acumulador = 0;
+  let multiplicador = 2;
+
+  for(let i = rut.length - 1; i >= 0; i--) {
+    acumulador += multiplicador * parseInt(rut.charAt(i));
+    multiplicador = multiplicador === 7 ? 2 : multiplicador + 1 // if ternario
+  }
+
+  const digitoParaEvaluar = 11 - (acumulador % 11)
+
+  if(digitoParaEvaluar === 11) return '0';
+  if(digitoParaEvaluar === 10) return 'k';
+  return digitoParaEvaluar.toString();
+
+}
+
+
+const validarDigitoVerificador = (numeroRut, DV_Rut) => {
+  const dvCalculado = calcularDigitoVerificador(numeroRut);
+  if(dvCalculado.toLocaleLowerCase() !== DV_Rut.toLocaleLowerCase()) {
+    throw new Error('Digito verificador no válido')
+  }
+
+  return DV_Rut
+}
+
+const validarMonto = (monto) => {
+  if(isNaN(monto) || monto < 0) throw new Error('El monto debe ser un núermo mayor que 0')
+  return monto
+}
+
+const validarGasto = (gasto) => {
+  if(!(gasto instanceof Gasto)) throw new Error('El gasto debe ser una instancia de la clase Gasto')
+  return gasto
+}
+
+/* ------------------------------------- Manejo del DOM ----------------------------------------------*/
+
+const userForm = document.getElementById('user-form');
+const gastoForm = document.getElementById("gastos-form");
+
+const selectUsers = document.getElementById("select-usuario");
+
+const usuarios = []
+
+const actualizarUsuarios = () => {
+  selectUsers.innerHTML = ""
+
+  usuarios.forEach((usuario, index) => {
+    const optionsSelect = document.createElement('option')
+    optionsSelect.value = index
+    optionsSelect.textContent = usuario.getNombreCompleto();
+    
+    selectUsers.appendChild(optionsSelect)
+  })
+}
+
+
+userForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+
+  const nombre = document.getElementById('nombre').value;
+  const apellidoP = document.getElementById('apellido-p').value;
+  const apellidoM = document.getElementById('apellido-m').value;
+  const numeroRut = document.getElementById('rut').value;
+  const dvRut = document.getElementById("dv-rut").value;
+  const telefono = document.getElementById('telefono').value;
+  const email = document.getElementById('email').value;
+  const presupuesto = document.getElementById('presupuesto').value
+
+  try {
+    const usuario = new Usuario(
+      nombre, 
+      apellidoP, 
+      apellidoM, 
+      numeroRut, 
+      dvRut, 
+      telefono, 
+      email, 
+      presupuesto
+    );
+    usuarios.push(usuario)
+    actualizarUsuarios()
+    userForm.reset();
+  } catch (error) {
+      console.error('Error al crear el usuario', error)
+      alert('Error al crear el usuario', error.message)
+  }
+})
+
+gastoForm.addEventListener('submit', (event) => {
+  event.preventDefault()
+
+  const usuarioSeleccionado = usuarios[selectUsers.selectedIndex]
+
+  const nombreGasto = document.getElementById("nombre-gasto").value;
+  const montoGasto = document.getElementById("monto-gasto").value;
+
+  try{
+    const gasto = new Gasto(nombreGasto, montoGasto);
+    usuarioSeleccionado.agregarGasto(gasto)
+    gastoForm.reset()
+    console.log(usuarioSeleccionado.getAllProperties())
+    console.log(usuarioSeleccionado.getGastos());
+  } catch (error) {
+    console.error('No pudimos agregar el gasto', error)
+    alert('No pudimos agregar el gasto', error)
+  }
+
+})
