@@ -109,12 +109,6 @@ function Usuario(nombre, apellidoP, apellidoM, rutNumero, rutDV, telefono, email
       _gastos = nuevoGastos;
     };
     
-    this.setRut = function (nuevoRut) {
-      //validacion pendiente
-      _rut = nuevoRut;
-    };
-
-
     // Métodos Privados -> Ejemplo de como hacerla en prototipos privados (más abajo esta la fn que estamos usando)
     /* function validarNombres(nombre, regex) {
       if(!regex.test(nombre)) throw new Error('El nombre o los apellidos solo deben contener letras y espacios')
