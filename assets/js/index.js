@@ -199,8 +199,9 @@ const validarDigitoVerificador = (numeroRut, DV_Rut) => {
 }
 
 const validarMonto = (monto) => {
-  if(isNaN(monto) || monto < 0) throw new Error('El monto debe ser un núermo mayor que 0')
-  return monto
+  const montoNormalizado = Number(monto)
+  if(isNaN(montoNormalizado) || montoNormalizado < 0) throw new Error('El monto debe ser un núermo mayor que 0')
+  return montoNormalizado
 }
 
 const validarGasto = (gasto) => {
@@ -210,10 +211,16 @@ const validarGasto = (gasto) => {
 
 /* ------------------------------------- Manejo del DOM ----------------------------------------------*/
 
+
+const REGION = "es-CL";
+const DIVISA = 'CLP'
+
 const userForm = document.getElementById('user-form');
 const gastoForm = document.getElementById("gastos-form");
 
 const selectUsers = document.getElementById("select-usuario");
+
+const tablaGastos = document.getElementById("tabla-gastos");
 
 const usuarios = []
 
@@ -229,6 +236,79 @@ const actualizarUsuarios = () => {
   })
 }
 
+//Primera opción de actualizarGastos()
+/* const actualizarGastos = () => {
+  const usuarioSeleccionado = usuarios[selectUsers.selectedIndex];
+  tablaGastos.innerHTML = ''
+
+  if(!usuarioSeleccionado) return
+
+  usuarioSeleccionado.getGastos().forEach((gasto, index) => {
+    const fila = document.createElement('tr');
+    const tdNombre = document.createElement('td');
+
+    tdNombre.textContent = gasto.getNombre();
+
+    const tdMonto = document.createElement('td')
+    tdMonto.textContent = gasto.getMonto();
+
+    const tdAcciones = document.createElement('td');
+    const btnEliminar = document.createElement('button')
+    btnEliminar.textContent = 'Eliminar'
+
+    fila.appendChild(tdNombre)
+    fila.appendChild(tdMonto)
+    fila.appendChild(tdAcciones)
+    tdAcciones.appendChild(btnEliminar)
+    tablaGastos.appendChild(fila)
+
+  })
+
+}
+ */
+
+
+/* const formatearDivisa = (number, region, divisa) => number.toLocaleString(region, { style: 'currency', currency: divisa }) */
+
+const formatearDivisa = (number, region, divisa) => {
+  const formatoDivisa = new Intl.NumberFormat(region, {
+    style: 'currency',
+    currency: divisa,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+    
+  })
+
+  return formatoDivisa.format(number)
+}
+
+
+
+//Segunda opción de actualizar gastos
+const actualizarGastos = () => {
+  const usuarioSeleccionado = usuarios[selectUsers.selectedIndex];
+  tablaGastos.innerHTML = "";
+
+  if (!usuarioSeleccionado) return;
+
+  let htmlTemplate = ''
+
+  usuarioSeleccionado.getGastos().forEach((gasto, index) => {
+    
+    htmlTemplate += `
+      <tr>
+        <td>${gasto.getNombre()}</td>
+        <td>${formatearDivisa(gasto.getMonto(), REGION, DIVISA)}</td>
+        <td>
+          <button class="btn-eliminar">Eliminar</button>
+          <button class="btn-editar">Editar</button>
+        </td>
+      </tr>
+    `;
+  });
+
+  tablaGastos.innerHTML = htmlTemplate
+};
 
 userForm.addEventListener('submit', (event) => {
   event.preventDefault();
@@ -274,11 +354,12 @@ gastoForm.addEventListener('submit', (event) => {
     const gasto = new Gasto(nombreGasto, montoGasto);
     usuarioSeleccionado.agregarGasto(gasto)
     gastoForm.reset()
-    console.log(usuarioSeleccionado.getAllProperties())
-    console.log(usuarioSeleccionado.getGastos());
+    actualizarGastos()
   } catch (error) {
     console.error('No pudimos agregar el gasto', error)
     alert('No pudimos agregar el gasto', error)
   }
 
 })
+
+selectUsers.addEventListener('change', actualizarGastos)
