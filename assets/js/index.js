@@ -104,6 +104,8 @@ function Usuario(nombre, apellidoP, apellidoM, rutNumero, rutDV, telefono, email
       _gastos.push(validarGasto(gasto))
     }
     
+    
+
     // Métodos Privados -> Ejemplo de como hacerla en prototipos privados (más abajo esta la fn que estamos usando)
     /* function validarNombres(nombre, regex) {
       if(!regex.test(nombre)) throw new Error('El nombre o los apellidos solo deben contener letras y espacios')
@@ -219,8 +221,9 @@ const userForm = document.getElementById('user-form');
 const gastoForm = document.getElementById("gastos-form");
 
 const selectUsers = document.getElementById("select-usuario");
-
 const tablaGastos = document.getElementById("tabla-gastos");
+
+const presupuesto = document.getElementById("presupuesto-total");
 
 const usuarios = []
 
@@ -276,7 +279,7 @@ const formatearDivisa = (number, region, divisa) => {
     currency: divisa,
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-    
+
   })
 
   return formatoDivisa.format(number)
@@ -310,6 +313,13 @@ const actualizarGastos = () => {
   tablaGastos.innerHTML = htmlTemplate
 };
 
+const actualizarMontoHTML = (contenedor, monto) => contenedor.textContent = formatearDivisa(monto, REGION, DIVISA)
+
+const actualizarPresupuesto = (usuario) => {
+  const montoPresupuesto = usuario.getPresupuesto()
+  actualizarMontoHTML(presupuesto, montoPresupuesto)
+}
+
 userForm.addEventListener('submit', (event) => {
   event.preventDefault();
 
@@ -335,6 +345,7 @@ userForm.addEventListener('submit', (event) => {
     );
     usuarios.push(usuario)
     actualizarUsuarios()
+    actualizarPresupuesto(usuario)
     userForm.reset();
   } catch (error) {
       console.error('Error al crear el usuario', error)
@@ -362,4 +373,9 @@ gastoForm.addEventListener('submit', (event) => {
 
 })
 
-selectUsers.addEventListener('change', actualizarGastos)
+selectUsers.addEventListener('change', () => {
+  const usuarioSeleccionado = usuarios[selectUsers.selectedIndex]
+
+  actualizarGastos()
+  actualizarPresupuesto(usuarioSeleccionado)
+})
