@@ -112,6 +112,11 @@ function Usuario(nombre, apellidoP, apellidoM, rutNumero, rutDV, telefono, email
       return gastoTotal
     }
 
+    this.calcularSaldoTotal = function() {
+      const saldoTotal = _presupuesto - this.calcularGastoTotal()
+      return validarSaldo(saldoTotal)
+    }
+
     // Métodos Privados -> Ejemplo de como hacerla en prototipos privados (más abajo esta la fn que estamos usando)
     /* function validarNombres(nombre, regex) {
       if(!regex.test(nombre)) throw new Error('El nombre o los apellidos solo deben contener letras y espacios')
@@ -217,6 +222,14 @@ const validarGasto = (gasto) => {
   return gasto
 }
 
+
+const validarSaldo = (saldo) => {
+  if(saldo < 0) {
+    alert('No puedes quedar con saldo Negativo')
+    throw new Error('El saldo no puede ser negativo')
+  }
+  return saldo
+}
 /* ------------------------------------- Manejo del DOM ----------------------------------------------*/
 
 
@@ -231,6 +244,7 @@ const tablaGastos = document.getElementById("tabla-gastos");
 
 const presupuesto = document.getElementById("presupuesto-total");
 const gastoTotal = document.getElementById("gasto-total");
+const saldoTotal = document.getElementById("saldo-total");
 
 const usuarios = []
 
@@ -300,6 +314,7 @@ const actualizarGastos = () => {
   tablaGastos.innerHTML = "";
 
   if (!usuarioSeleccionado) return;
+  if (usuarioSeleccionado.calcularSaldoTotal() < 0) return;
 
   let htmlTemplate = ''
 
@@ -328,8 +343,14 @@ const actualizarPresupuesto = (usuario) => {
 }
 
 const actualizarTotalGastos = (usuario) => {
+  if(usuario.calcularSaldoTotal() < 0) return
   const totalGastos = usuario.calcularGastoTotal()
   actualizarMontoHTML(gastoTotal, totalGastos);
+}
+
+const actualizarSaldoTotal = (usuario) => {
+  const totalSaldo = usuario.calcularSaldoTotal()
+  actualizarMontoHTML(saldoTotal, totalSaldo)
 }
 
 userForm.addEventListener('submit', (event) => {
@@ -358,6 +379,7 @@ userForm.addEventListener('submit', (event) => {
     usuarios.push(usuario)
     actualizarUsuarios()
     actualizarPresupuesto(usuario)
+    actualizarSaldoTotal(usuario)
     userForm.reset();
   } catch (error) {
       console.error('Error al crear el usuario', error)
@@ -379,6 +401,7 @@ gastoForm.addEventListener('submit', (event) => {
     gastoForm.reset()
     actualizarGastos()
     actualizarTotalGastos(usuarioSeleccionado)
+    actualizarSaldoTotal(usuarioSeleccionado)
   } catch (error) {
     console.error('No pudimos agregar el gasto', error)
     alert('No pudimos agregar el gasto', error)
@@ -386,10 +409,12 @@ gastoForm.addEventListener('submit', (event) => {
 
 })
 
+
 selectUsers.addEventListener('change', () => {
   const usuarioSeleccionado = usuarios[selectUsers.selectedIndex]
 
   actualizarGastos()
   actualizarPresupuesto(usuarioSeleccionado)
   actualizarTotalGastos(usuarioSeleccionado)
+  actualizarSaldoTotal(usuarioSeleccionado)
 })
