@@ -325,14 +325,23 @@ const actualizarGastos = () => {
         <td>${gasto.getNombre()}</td>
         <td>${formatearDivisa(gasto.getMonto(), REGION, DIVISA)}</td>
         <td>
-          <button class="btn-eliminar">Eliminar</button>
+          <button data-index="${index}" class="btn-eliminar">Eliminar</button>
           <button class="btn-editar">Editar</button>
         </td>
       </tr>
-    `;
+        `;
   });
-
+      
   tablaGastos.innerHTML = htmlTemplate
+
+  document.querySelectorAll(".btn-eliminar").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      console.log("Estamos aqui");
+      const usuarioSeleccionado = usuarios[selectUsers.selectedIndex];
+      const index = event.target.getAttribute("data-index");
+      eliminarGasto(usuarioSeleccionado, index);
+    });
+  });
 };
 
 const actualizarMontoHTML = (contenedor, monto) => contenedor.textContent = formatearDivisa(monto, REGION, DIVISA)
@@ -352,6 +361,14 @@ const actualizarSaldoTotal = (usuario) => {
   const totalSaldo = usuario.calcularSaldoTotal()
   actualizarMontoHTML(saldoTotal, totalSaldo)
 }
+
+const eliminarGasto = (usuario, index) => {
+  usuario.getGastos().splice(index, 1);
+  actualizarGastos()
+  actualizarTotalGastos(usuario)
+  actualizarSaldoTotal(usuario)
+}
+
 
 userForm.addEventListener('submit', (event) => {
   event.preventDefault();
