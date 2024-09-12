@@ -104,7 +104,13 @@ function Usuario(nombre, apellidoP, apellidoM, rutNumero, rutDV, telefono, email
       _gastos.push(validarGasto(gasto))
     }
     
-    
+    this.calcularGastoTotal = function () {
+      const gastoTotal = _gastos.reduce((acumulador, gasto) => {
+        return acumulador + gasto.getMonto()
+      }, 0)
+
+      return gastoTotal
+    }
 
     // Métodos Privados -> Ejemplo de como hacerla en prototipos privados (más abajo esta la fn que estamos usando)
     /* function validarNombres(nombre, regex) {
@@ -224,6 +230,7 @@ const selectUsers = document.getElementById("select-usuario");
 const tablaGastos = document.getElementById("tabla-gastos");
 
 const presupuesto = document.getElementById("presupuesto-total");
+const gastoTotal = document.getElementById("gasto-total");
 
 const usuarios = []
 
@@ -320,6 +327,11 @@ const actualizarPresupuesto = (usuario) => {
   actualizarMontoHTML(presupuesto, montoPresupuesto)
 }
 
+const actualizarTotalGastos = (usuario) => {
+  const totalGastos = usuario.calcularGastoTotal()
+  actualizarMontoHTML(gastoTotal, totalGastos);
+}
+
 userForm.addEventListener('submit', (event) => {
   event.preventDefault();
 
@@ -366,6 +378,7 @@ gastoForm.addEventListener('submit', (event) => {
     usuarioSeleccionado.agregarGasto(gasto)
     gastoForm.reset()
     actualizarGastos()
+    actualizarTotalGastos(usuarioSeleccionado)
   } catch (error) {
     console.error('No pudimos agregar el gasto', error)
     alert('No pudimos agregar el gasto', error)
@@ -378,4 +391,5 @@ selectUsers.addEventListener('change', () => {
 
   actualizarGastos()
   actualizarPresupuesto(usuarioSeleccionado)
+  actualizarTotalGastos(usuarioSeleccionado)
 })
