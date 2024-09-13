@@ -322,27 +322,94 @@ const actualizarGastos = () => {
     
     htmlTemplate += `
       <tr>
+        <td>${index + 1}</td>
         <td>${gasto.getNombre()}</td>
         <td>${formatearDivisa(gasto.getMonto(), REGION, DIVISA)}</td>
         <td>
           <button data-index="${index}" class="btn-eliminar">Eliminar</button>
-          <button class="btn-editar">Editar</button>
+          <button data-index="${index}" class="btn-editar">Editar</button>
         </td>
       </tr>
         `;
+        //Mala práctica ocupar la función a traves del onclick en Javascript Vanilla (En React, Vue y similares no es problema :D)
   });
       
   tablaGastos.innerHTML = htmlTemplate
 
+  
+  
   document.querySelectorAll(".btn-eliminar").forEach((button) => {
     button.addEventListener("click", (event) => {
-      console.log("Estamos aqui");
       const usuarioSeleccionado = usuarios[selectUsers.selectedIndex];
       const index = event.target.getAttribute("data-index");
       eliminarGasto(usuarioSeleccionado, index);
-    });
+      });
   });
+
+  document.querySelectorAll('.btn-editar').forEach(button => {
+    button.addEventListener('click', (event) => {
+      const usuarioSeleccionado = usuarios[selectUsers.selectedIndex];
+      const index = event.target.getAttribute("data-index");
+      edit(usuarioSeleccionado, index);
+    })
+  })
 };
+
+    var usuarioActual, iGastoActual, filaActual
+  
+    function edit(u, i) {
+      usuarioActual = u
+      iGastoActual = i
+
+      var fila = document.querySelectorAll("#tabla-gastos tr") //=> NodeList !== Array pero se le parece
+      filaActual = fila[i]
+      
+      console.log(filaActual.children)
+      if(!filaActual) {
+        console.error('no pudismos encontrar la fila')
+        return
+      }
+      var casillaN = filaActual.children[1]
+      var casillaM = filaActual.children[2]
+  
+      casillaN.innerHTML = '<input type="text" id="editar-name" value="' + casillaN.textContent + '">'
+      casillaM.innerHTML = '<input type="number" id="editar-mount" value="' + casillaM.textContent + '">'
+  
+      var casillaA = filaActual.children[3];
+      casillaA.innerHTML = '<button onclick="saveChanges()">Guardar</button><button onclick="cancelChanges()">Cancelar</button>'
+  
+    }
+  
+    function saveChanges() {
+      var nuevoG = document.getElementById('editar-name').value
+      var nuevoM = document.getElementById('editar-mount').value
+      
+      usuarioActual.getGastos()[iGastoActual].setNombre(nuevoG)
+      usuarioActual.getGastos()[iGastoActual].setMonto(nuevoM)
+  
+      filaActual.children[1].textContent = nuevoG;
+      filaActual.children[2].textContent = formatearDivisa(nuevoM, REGION, DIVISA)
+  
+      filaActual.children[3].innerHTML = 
+        '<button onclick="edit(usuarioActual, ' + iGastoActual + 
+        ')">Editar</button><button onclick="eliminarGasto(usuarioActual, ' + iGastoActual +
+        ')">Eliminar</button>'
+    }
+  
+    function cancelChanges() {
+      var originalG = usuarioActual.getGastos()[iGastoActual].getNombre()
+      var originalM = usuarioActual.getGastos()[iGastoActual].getMonto()
+  
+      filaActual.children[1].textContent = originalG;
+      filaActual.children[2].textContent = formatearDivisa(originalM,REGION,DIVISA);
+  
+      filaActual.children[3].innerHTML =
+        '<button onclick="edit(usuarioActual, ' +
+        iGastoActual +
+        ')">Editar</button><button onclick="eliminarGasto(usuarioActual, ' +
+        iGastoActual +
+        ')">Eliminar</button>';
+    }
 
 const actualizarMontoHTML = (contenedor, monto) => contenedor.textContent = formatearDivisa(monto, REGION, DIVISA)
 
