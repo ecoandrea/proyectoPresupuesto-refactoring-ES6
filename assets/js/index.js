@@ -104,6 +104,19 @@ function Usuario(nombre, apellidoP, apellidoM, rutNumero, rutDV, telefono, email
       _gastos.push(validarGasto(gasto))
     }
     
+    this.calcularGastoTotal = function () {
+      const gastoTotal = _gastos.reduce((acumulador, gasto) => {
+        return acumulador + gasto.getMonto()
+      }, 0)
+
+      return gastoTotal
+    }
+
+    this.calcularSaldoTotal = function() {
+      const saldoTotal = _presupuesto - this.calcularGastoTotal()
+      return validarSaldo(saldoTotal)
+    }
+
     // Métodos Privados -> Ejemplo de como hacerla en prototipos privados (más abajo esta la fn que estamos usando)
     /* function validarNombres(nombre, regex) {
       if(!regex.test(nombre)) throw new Error('El nombre o los apellidos solo deben contener letras y espacios')
@@ -199,8 +212,9 @@ const validarDigitoVerificador = (numeroRut, DV_Rut) => {
 }
 
 const validarMonto = (monto) => {
-  if(isNaN(monto) || monto < 0) throw new Error('El monto debe ser un núermo mayor que 0')
-  return monto
+  const montoNormalizado = Number(monto)
+  if(isNaN(montoNormalizado) || montoNormalizado < 0) throw new Error('El monto debe ser un núermo mayor que 0')
+  return montoNormalizado
 }
 
 const validarGasto = (gasto) => {
@@ -208,12 +222,29 @@ const validarGasto = (gasto) => {
   return gasto
 }
 
+
+const validarSaldo = (saldo) => {
+  if(saldo < 0) {
+    alert('No puedes quedar con saldo Negativo')
+    throw new Error('El saldo no puede ser negativo')
+  }
+  return saldo
+}
 /* ------------------------------------- Manejo del DOM ----------------------------------------------*/
+
+
+const REGION = "es-CL";
+const DIVISA = 'CLP'
 
 const userForm = document.getElementById('user-form');
 const gastoForm = document.getElementById("gastos-form");
 
 const selectUsers = document.getElementById("select-usuario");
+const tablaGastos = document.getElementById("tabla-gastos");
+
+const presupuesto = document.getElementById("presupuesto-total");
+const gastoTotal = document.getElementById("gasto-total");
+const saldoTotal = document.getElementById("saldo-total");
 
 const usuarios = []
 
@@ -227,6 +258,182 @@ const actualizarUsuarios = () => {
     
     selectUsers.appendChild(optionsSelect)
   })
+}
+
+//Primera opción de actualizarGastos()
+/* const actualizarGastos = () => {
+  const usuarioSeleccionado = usuarios[selectUsers.selectedIndex];
+  tablaGastos.innerHTML = ''
+
+  if(!usuarioSeleccionado) return
+
+  usuarioSeleccionado.getGastos().forEach((gasto, index) => {
+    const fila = document.createElement('tr');
+    const tdNombre = document.createElement('td');
+
+    tdNombre.textContent = gasto.getNombre();
+
+    const tdMonto = document.createElement('td')
+    tdMonto.textContent = gasto.getMonto();
+
+    const tdAcciones = document.createElement('td');
+    const btnEliminar = document.createElement('button')
+    btnEliminar.textContent = 'Eliminar'
+
+    fila.appendChild(tdNombre)
+    fila.appendChild(tdMonto)
+    fila.appendChild(tdAcciones)
+    tdAcciones.appendChild(btnEliminar)
+    tablaGastos.appendChild(fila)
+
+  })
+
+}
+ */
+
+
+/* const formatearDivisa = (number, region, divisa) => number.toLocaleString(region, { style: 'currency', currency: divisa }) */
+
+const formatearDivisa = (number, region, divisa) => {
+  const formatoDivisa = new Intl.NumberFormat(region, {
+    style: 'currency',
+    currency: divisa,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+
+  })
+
+  return formatoDivisa.format(number)
+}
+
+
+
+//Segunda opción de actualizar gastos
+const actualizarGastos = () => {
+  const usuarioSeleccionado = usuarios[selectUsers.selectedIndex];
+  tablaGastos.innerHTML = "";
+
+  if (!usuarioSeleccionado) return;
+  if (usuarioSeleccionado.calcularSaldoTotal() < 0) return;
+
+  let htmlTemplate = ''
+
+  usuarioSeleccionado.getGastos().forEach((gasto, index) => {
+    
+    htmlTemplate += `
+      <tr>
+        <td>${index + 1}</td>
+        <td>${gasto.getNombre()}</td>
+        <td>${formatearDivisa(gasto.getMonto(), REGION, DIVISA)}</td>
+        <td>
+          <button data-index="${index}" class="btn-eliminar">Eliminar</button>
+          <button data-index="${index}" class="btn-editar">Editar</button>
+        </td>
+      </tr>
+        `;
+        //Mala práctica ocupar la función a traves del onclick en Javascript Vanilla (En React, Vue y similares no es problema :D)
+  });
+      
+  tablaGastos.innerHTML = htmlTemplate
+
+  
+  
+  document.querySelectorAll(".btn-eliminar").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      const usuarioSeleccionado = usuarios[selectUsers.selectedIndex];
+      const index = event.target.getAttribute("data-index");
+      eliminarGasto(usuarioSeleccionado, index);
+      });
+  });
+
+  document.querySelectorAll('.btn-editar').forEach(button => {
+    button.addEventListener('click', (event) => {
+      const usuarioSeleccionado = usuarios[selectUsers.selectedIndex];
+      const index = event.target.getAttribute("data-index");
+      edit(usuarioSeleccionado, index);
+    })
+  })
+};
+
+    var usuarioActual, iGastoActual, filaActual
+  
+    function edit(u, i) {
+      usuarioActual = u
+      iGastoActual = i
+
+      var fila = document.querySelectorAll("#tabla-gastos tr") //=> NodeList !== Array pero se le parece
+      filaActual = fila[i]
+      
+      console.log(filaActual.children)
+      if(!filaActual) {
+        console.error('no pudismos encontrar la fila')
+        return
+      }
+      var casillaN = filaActual.children[1]
+      var casillaM = filaActual.children[2]
+  
+      casillaN.innerHTML = '<input type="text" id="editar-name" value="' + casillaN.textContent + '">'
+      casillaM.innerHTML = '<input type="number" id="editar-mount" value="' + casillaM.textContent + '">'
+  
+      var casillaA = filaActual.children[3];
+      casillaA.innerHTML = '<button onclick="saveChanges()">Guardar</button><button onclick="cancelChanges()">Cancelar</button>'
+  
+    }
+  
+    function saveChanges() {
+      var nuevoG = document.getElementById('editar-name').value
+      var nuevoM = document.getElementById('editar-mount').value
+      
+      usuarioActual.getGastos()[iGastoActual].setNombre(nuevoG)
+      usuarioActual.getGastos()[iGastoActual].setMonto(nuevoM)
+  
+      filaActual.children[1].textContent = nuevoG;
+      filaActual.children[2].textContent = formatearDivisa(nuevoM, REGION, DIVISA)
+  
+      filaActual.children[3].innerHTML = 
+        '<button onclick="edit(usuarioActual, ' + iGastoActual + 
+        ')">Editar</button><button onclick="eliminarGasto(usuarioActual, ' + iGastoActual +
+        ')">Eliminar</button>'
+    }
+  
+    function cancelChanges() {
+      var originalG = usuarioActual.getGastos()[iGastoActual].getNombre()
+      var originalM = usuarioActual.getGastos()[iGastoActual].getMonto()
+  
+      filaActual.children[1].textContent = originalG;
+      filaActual.children[2].textContent = formatearDivisa(originalM,REGION,DIVISA);
+  
+      filaActual.children[3].innerHTML =
+        '<button onclick="edit(usuarioActual, ' +
+        iGastoActual +
+        ')">Editar</button><button onclick="eliminarGasto(usuarioActual, ' +
+        iGastoActual +
+        ')">Eliminar</button>';
+    }
+
+const actualizarMontoHTML = (contenedor, monto) => contenedor.textContent = formatearDivisa(monto, REGION, DIVISA)
+
+const actualizarPresupuesto = (usuario) => {
+  const montoPresupuesto = usuario.getPresupuesto()
+  actualizarMontoHTML(presupuesto, montoPresupuesto)
+}
+
+const actualizarTotalGastos = (usuario) => {
+  if(usuario.calcularSaldoTotal() < 0) return
+  const totalGastos = usuario.calcularGastoTotal()
+  actualizarMontoHTML(gastoTotal, totalGastos);
+}
+
+const actualizarSaldoTotal = (usuario) => {
+  const totalSaldo = usuario.calcularSaldoTotal()
+  actualizarMontoHTML(saldoTotal, totalSaldo)
+}
+
+const eliminarGasto = (usuario, index) => {
+  usuario.getGastos().splice(index, 1);
+  actualizarGastos()
+  actualizarTotalGastos(usuario)
+  actualizarSaldoTotal(usuario)
 }
 
 
@@ -255,6 +462,8 @@ userForm.addEventListener('submit', (event) => {
     );
     usuarios.push(usuario)
     actualizarUsuarios()
+    actualizarPresupuesto(usuario)
+    actualizarSaldoTotal(usuario)
     userForm.reset();
   } catch (error) {
       console.error('Error al crear el usuario', error)
@@ -274,11 +483,22 @@ gastoForm.addEventListener('submit', (event) => {
     const gasto = new Gasto(nombreGasto, montoGasto);
     usuarioSeleccionado.agregarGasto(gasto)
     gastoForm.reset()
-    console.log(usuarioSeleccionado.getAllProperties())
-    console.log(usuarioSeleccionado.getGastos());
+    actualizarGastos()
+    actualizarTotalGastos(usuarioSeleccionado)
+    actualizarSaldoTotal(usuarioSeleccionado)
   } catch (error) {
     console.error('No pudimos agregar el gasto', error)
     alert('No pudimos agregar el gasto', error)
   }
 
+})
+
+
+selectUsers.addEventListener('change', () => {
+  const usuarioSeleccionado = usuarios[selectUsers.selectedIndex]
+
+  actualizarGastos()
+  actualizarPresupuesto(usuarioSeleccionado)
+  actualizarTotalGastos(usuarioSeleccionado)
+  actualizarSaldoTotal(usuarioSeleccionado)
 })
