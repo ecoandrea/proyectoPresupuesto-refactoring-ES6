@@ -1,30 +1,44 @@
-import { Usuario } from './src/model/Usuario.js'
-import { Gasto } from './src/model/Gastos.js'
+import { Usuario, Gasto, InterfaceDom } from './src/model/index.js'
+import { REGION, DIVISA } from './src/util/constantes.js'
 
-const usuario = new Usuario(
-    'Dino', 
-    'Alvarez', 
-    'Lopez', 
-    '18569777', 
-    '0', 
-    '+56998906683', 
-    'mail@erxample.com', 
-    150000, 
-    []
-)
+const userForm = document.querySelector('#user-form')
+const gastoForm = document.querySelector('#gasto-form')
 
-const gasto = new Gasto('sopaipa', 500)
+const selectUsers = document.querySelector('#select-usuario')
 
-console.log(gasto.getAllProperties())
+const contenedorPresupuesto = document.querySelector('#presupuesto-total');
 
-const cambiarNombre = () => {   
-    const resultTask = (usuario.setNombre("Felipe"));
 
-    if(resultTask.success)
-    alert(resultTask.message)
-   
-}
+const usuarios = []
 
-cambiarNombre()
+userForm.addEventListener('submit', (event) => {
+    event.preventDefault();
 
-console.log(usuario.nombreCompleto)
+    const nombre = document.querySelector('#nombre').value;
+    const apellidoP = document.querySelector("#apellido-p").value;
+    const apellidoM = document.querySelector("#apellido-m").value;
+    const numeroRut = document.querySelector("#rut").value;
+    const dvRut = document.querySelector("#dv-rut").value;
+    const telefono = document.querySelector("#telefono").value;
+    const email = document.querySelector("#email").value;
+    const presupuesto = document.querySelector("#presupuesto").value;
+
+    try {
+        const usuario = new Usuario(
+            nombre, 
+            apellidoP,
+            apellidoM,
+            numeroRut,
+            dvRut,
+            telefono,
+            email,
+            presupuesto
+        )
+        usuarios.push(usuario)
+        InterfaceDom.actualizarUsuarioDom(selectUsers, usuarios)
+        InterfaceDom.actualizarPresupuesto(usuario, contenedorPresupuesto, REGION, DIVISA)
+    } catch(error) {
+        console.error(error)
+        alert(`${error}`)
+    }
+})
