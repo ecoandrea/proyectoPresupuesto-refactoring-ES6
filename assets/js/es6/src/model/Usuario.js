@@ -81,66 +81,106 @@ export class Usuario {
     return this.#gastos;
   }
 
-  set nombre(nuevoNombre) {
+  setNombre(nuevoNombre) {
     try {
       this.#nombre = Validar.nombre(nuevoNombre, REGEX_NOMBRES);
-      /* alert('Nombre cambiado con éxito') */
+      return {
+        message: 'Nombre modificado con éxito',
+        success: true
+      }
     } catch (error) {
       console.error("No pudimos modificar este nombre", error);
-      /* alert('No pudimos cambiar el nombre', error) */
-      /* return { //Pero funcion mejor en entornos de Cliente-Servidor osea Back y Front sepados
-        message: "No pudimos modificar este nombre",
-        error
-      } */
-    }
-  }
-
-  set apellidoP(nuevoApellidoP) {
-    try {
-      this.#apellidoP = Validar.nombre(nuevoApellidoP, REGEX_NOMBRES);
-    } catch (error) {
-      console.error("No pudimos modiciar el apellido paterno", error);
       return {
-        message: "No pudimos modificar el apellido paterno",
+        success: false,
+        message: 'No pudimos modificar el nombre',
         error
       }
     }
   }
 
-  set apellidoM(nuevoApellidoM) {
+  setApellidoP(nuevoApellidoP) {
+    try {
+      this.#apellidoP = Validar.nombre(nuevoApellidoP, REGEX_NOMBRES);
+      return {
+        message: 'Apellido Paterno modificado con éxito',
+        success: true
+      }
+    } catch (error) {
+      console.error("No pudimos modiciar el apellido paterno", error);
+      return {
+        message: "No pudimos modificar el apellido paterno",
+        success: false,
+        error
+      }
+    }
+  }
+
+  setApellidoM(nuevoApellidoM) {
     try {
       this.#apellidoM = Validar.nombre(nuevoApellidoM, REGEX_NOMBRES);
+      return {
+        message: "Apellido Paterno modificado con éxito",
+        success: true,
+      };
     } catch (error) {
       console.error("No pudismo modiciar el apellido materno", error);
       return {
         message: "No pudimos modificar el apellido materno",
+        success: false,
         error,
       };
     }
   }
 
-  set telefono(nuevoTelefono) {
+  setTelefono(nuevoTelefono) {
     try {
         this.#telefono = Validar.telefono(nuevoTelefono)
+        return {
+          message: 'Teléfono modificado con éxito',
+          success: true
+        }
     } catch (error) {
         console.error('Error al modificar el telefono', error)
+        return {
+          message: "No pudimos modificar el teléfono",
+          success: false,
+          error
+        }
     }
     
   }
 
-  set email(nuevoEmail) {
+  setEmail(nuevoEmail) {
     try {
         this.#email = Validar.email(nuevoEmail)
+        return {
+          message: 'Email modificado con éxito',
+          success: true
+        }
     } catch (error) {
         console.error('Error al modificar el email', error)
+        return {
+          message: "No pudimos modificar el correo",
+          success: false,
+          error,
+        };
     }
   }
 
-  set presupuesto(nuevoPresupuesto) {
+  setPresupuesto(nuevoPresupuesto) {
     try {
         this.#presupuesto = Validar.monto(nuevoPresupuesto)
+        return {
+          message: "Presupuesto modificado con éxito",
+          success: true,
+        };
     }catch(error) {
         console.error('Error al modificar el presupuesto', error)
+        return {
+          message: "No pudimos modificar el correo",
+          success: false,
+          error,
+        };
     }
   } 
 
@@ -177,4 +217,4 @@ export class Usuario {
     const saldoTotal = this.#presupuesto - this.calcularGastoTotal()
     return saldoTotal
   }
-} 
+}

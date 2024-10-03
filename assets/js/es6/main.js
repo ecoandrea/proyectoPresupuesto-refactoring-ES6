@@ -18,9 +18,11 @@ const gasto = new Gasto('sopaipa', 500)
 console.log(gasto.getAllProperties())
 
 const cambiarNombre = () => {   
-    const resultTask = (usuario.nombre = "david");
-    console.log(resultTask)
-    return resultTask
+    const resultTask = (usuario.setNombre("Felipe"));
+
+    if(resultTask.success)
+    alert(resultTask.message)
+   
 }
 
 cambiarNombre()
