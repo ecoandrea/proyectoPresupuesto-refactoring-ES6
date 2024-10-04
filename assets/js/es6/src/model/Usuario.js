@@ -1,4 +1,4 @@
-import { Validar } from './Validacion.js'
+import { Validar } from '../util/Validacion.js'
 import {
     REGEX_NOMBRES,
     REGEX_RUT,
@@ -213,7 +213,7 @@ export class Usuario {
     return gastoTotal
   }
 
-  calcularSaldoTotao() {
+  calcularSaldoTotal() {
     const saldoTotal = this.#presupuesto - this.calcularGastoTotal()
     return saldoTotal
   }

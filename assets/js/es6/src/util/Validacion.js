@@ -1,4 +1,5 @@
-import { REGEX_EMAIL } from "../util/constantes.js";
+import { Gasto } from '../model/index.js'
+import { REGEX_EMAIL } from "./constantes.js";
 
 export class Validar {
     static nombre(nombre, regex) {
@@ -72,9 +73,3 @@ export class Validar {
       return rutDV
     }
 }
-
-//si se hicieran varias validaciones en una
-/*static validarString(string, regex) {
-if(!regex.test(string)) throw new Error("La cadena no es valida")
-    return string
-} */
