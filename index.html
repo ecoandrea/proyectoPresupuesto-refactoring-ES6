@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
 
     <script type="module" defer src="./assets/js/es6/main.js"></script>
 </head>
+
 <body>
     <header>
         <h1>Edutecno Presupuestation's</h1>
@@ -28,7 +30,7 @@
                 <input type="text" id="apellido-m" placeholder="Apellido Materno">
 
                 <label for="rut">Rut (sin puntos)</label>
-                <input type="text" id="rut" placeholder="123456789" required> - 
+                <input type="text" id="rut" placeholder="123456789" required> -
                 <input type="text" id="dv-rut" placeholder="0" required>
 
                 <label for="telefono">Telefono (+56)</label>
@@ -47,7 +49,7 @@
         <section id="user-list">
             <h2>Usuarios</h2>
             <select id="select-usuario">
-                
+
             </select>
         </section>
 
@@ -77,7 +79,7 @@
                 </thead>
                 <tbody id="tabla-gastos">
                     <!--Aqui cargaremos dinamicamente los gastos-->
-                
+
                 </tbody>
             </table>
         </section>
@@ -88,6 +90,21 @@
             <p>Gasto Total: <span id="gasto-total">0</span></p>
             <p>Saldo Total: <span id="saldo-total">0</span></p>
         </section>
+        <div id="modal-editar-gasto" class="modal">
+            <div class="modal-contenido">
+                <h2>Editar Gastos</h2>
+                <form id="editar-gasto-form">
+                    <label for="editar-nombre-gasto">Nombre</label>
+                    <input type="text" id="editar-nombre-gasto" required>
+
+                    <label for="editar-monto-gasto">Monto</label>
+                    <input type="number" id="editar-monto-gasto" required>
+
+                    <button type="submit" class="btn">Guardar Cambios</button>
+                    <button id="cancelar-edicion" class="btn">Cancelar</button>
+                </form>
+            </div>
+        </div>
 
     </main>
 
@@ -95,4 +112,5 @@
         <h3>Soy un Footer</h3>
     </footer>
 </body>
+
 </html>

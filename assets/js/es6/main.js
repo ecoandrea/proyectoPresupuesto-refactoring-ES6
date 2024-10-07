@@ -44,7 +44,6 @@ userForm.addEventListener('submit', (event) => {
         InterfaceDom.actualizarSaldoTotal(usuario, contenedorSaldoTotal, REGION, DIVISA)
         GastoDom.actualizarTotalGastos(usuario,contenedorGastoTotal,REGION, DIVISA);
         GastoDom.actualizarGastos(usuario,tablaGastos,REGION,DIVISA);
-        userForm.reset()
     } catch(error) {
         console.error(error)
         alert(`${error}`)

@@ -20,7 +20,7 @@ export class Gasto {
 
     setNombre(nuevoNombre) {
         try {
-            this.#nombre = Validar.nombre(nuevoNombre)
+            this.#nombre = Validar.nombre(nuevoNombre, REGEX_NOMBRES)
             return {
               message: "Nombre modificado con éxito",
               success: true,
