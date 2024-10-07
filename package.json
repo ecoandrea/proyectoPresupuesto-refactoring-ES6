@@ -1,0 +1,13 @@
+{
+  "name": "presupuesto_edutecno_ejemplo_didactico",
+  "version": "1.0.0",
+  "main": "main.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node ./assets/js/es6/main.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
